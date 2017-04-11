@@ -1,0 +1,317 @@
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <!-- Configuration for the default package. -->
+    <package name="default" extends="struts-default">
+        
+        <!--        <interceptors>
+            <interceptor name="authentication" class="Interceptor.AuthenticationInterceptor" />
+            <interceptor-stack name="secureStack">
+                <interceptor-ref name="authenticationInterceptor" />
+                <interceptor-ref name="defaultStack" />
+            </interceptor-stack>
+        </interceptors>-->
+        
+        
+        
+        <interceptors>
+            <interceptor-stack name="defaultSecurityStack">
+                <interceptor-ref name="defaultStack" />
+                <interceptor-ref name="tokenSession">
+                    <param name="excludeMethods">*</param>
+                </interceptor-ref>
+                <interceptor-ref name="fileUpload">
+                    <param name="allowedTypes">image/png,image/gif,image/jpeg</param>
+                    <param name="allowedExtensions">jpg,png,gif</param> 
+                    <param name="maximumSize">1</param> 
+                </interceptor-ref>
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="defaultSecurityStack" />
+        
+        <global-results>
+            <result name="invalid.token">/jsp/error.jsp</result>
+        </global-results>
+
+
+        
+        <action name="loginInput" class="controller.LoginActionSupport">
+            <result name="success">login.jsp</result>
+        </action>
+        <action name="login" class="controller.LoginActionSupport" method="logIn">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> logIn </param>
+            </interceptor-ref>
+            <result name="success">index.jsp</result>
+            <result name="error">login.jsp</result>
+        </action>
+        
+        <action name="logout" class="controller.LoginActionSupport" method="logOut">
+            <result name="success">login.jsp</result>
+        </action>
+        
+        <action name="loginClientInput" class="controller.Login2ActionSupport">
+            <result name="success">login2.jsp</result>
+        </action>
+        <action name="loginclient" class="controller.Login2ActionSupport" method="logIn">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> logIn </param>
+            </interceptor-ref>
+            <result name="success" type="redirectAction">
+                <param name="actionName">index</param>
+            </result>
+            <result name="error">login2.jsp</result>
+        </action>
+        
+        <action name="logoutclient" class="controller.Login2ActionSupport" method="logOut">
+            <result name="success" type="redirectAction">
+                <param name="actionName">index</param>
+            </result>
+        </action>
+        
+        
+        <action name="adminIndex" class="controller.AdminActionSupport">
+            <!--<interceptor-ref name="secureStack" />-->
+            <result name="success">index.jsp</result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">loginInput</param>
+            </result>
+        </action>
+        
+        <action name="system" class="controller.AdminActionSupport" method="system">
+            <result name="success">system.jsp</result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">loginInput</param>
+            </result>
+        </action>
+        
+        <action name="prBackUp" class="controller.AdminActionSupport" method="backUp">
+            <result name="success" type="redirectAction">
+                <param name="actionName">system</param>
+            </result>
+            <result name="fail">error.jsp</result>
+        </action>
+        
+        <action name="viewProfileAdm" class="controller.AdminActionSupport" method="viewProfileAdm">
+            <result name="success">profileadm.jsp</result>
+        </action>
+        <!--        <action name="systemBackup" class="controller.BackUpActionSupport" method="backUp">
+            <result name="success">system.jsp</result>
+            <result name="fail">error.jsp</result>
+        </action>-->
+        
+        
+        <!--USER-->
+        <!--USER-->
+        <!--USER-->
+        <action name="userList" class="controller.UserActionSupport" method="getUser">
+            <result name="success">user.jsp</result>
+        </action>
+        
+        <action name="userListPaging" class="controller.UserActionSupport" method="getUserPaging">
+            <result name="success">user.jsp</result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">loginInput</param>
+            </result>
+        </action>
+        
+        <action name="insertUsr" class="controller.UserActionSupport" method="insertUsr">
+            <result name="success">userinsert.jsp</result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">loginInput</param>
+            </result>
+        </action>
+        
+        <action name="userInsert" class="controller.UserActionSupport" method="insertUser">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> insertUser </param>
+            </interceptor-ref>
+            <!--<result name="input">userinsert.jsp</result>-->
+            <result name="success" type="redirectAction">
+                <param name="actionName">userListPaging</param>
+            </result>
+            <!--            <result name="fail">userinsert.jsp</result>-->
+            <result name="fail" type="redirectAction">
+                <param name="actionName">insertUsr</param>
+            </result>
+        </action>
+        
+        <action name="userEdit" class="controller.UserActionSupport" method="editUser">
+            <result name="success">useredit.jsp</result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">loginInput</param>
+            </result>
+        </action>
+        
+        <action name="preditUser" class="controller.UserActionSupport" method="preditUser">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> preditUser </param>
+            </interceptor-ref>
+            <!--<result name="input">useredit.jsp</result>-->
+            <result name="success" type="redirectAction">
+                <param name="actionName">userListPaging</param>
+            </result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">userEdit</param>
+            </result>
+        </action>
+        
+        <action name="deleteUser" class="controller.UserActionSupport" method="deleteUser">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> deleteUser </param>
+            </interceptor-ref>
+            <result name="success" type="redirectAction">
+                <param name="actionName">userListPaging</param>
+            </result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">userListPaging</param>
+            </result>
+        </action>
+        
+        <action name="resetPassword" class="controller.UserActionSupport" method="resetPassword">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> resetPassword </param>
+            </interceptor-ref>
+            <result name="success" type="redirectAction">
+                <param name="actionName">userListPaging</param>
+            </result>
+        </action>
+            
+      
+        <!--BOOK-->
+        <!--BOOK-->
+        <!--BOOK-->
+        <action name="bookListPaging" class="controller.BookActionSupport" method="getBookPaging">
+            <result name="success">book.jsp</result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">loginInput</param>
+            </result>
+        </action>
+        
+        <action name="insertBook" class="controller.BookActionSupport" method="insertB">
+            <result name="success">bookinsert.jsp</result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">loginInput</param>
+            </result>
+        </action>
+        
+        <action name="prInsertBook" class="controller.BookActionSupport" method="insertBook">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> insertBook </param>
+            </interceptor-ref>
+            
+            <result name="success" type="redirectAction">
+                <param name="actionName">bookListPaging</param>
+            </result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">insertBook</param>
+            </result>
+            <!--            <result name="error" type="redirectAction">
+                <param name="actionName">loginInput</param>
+            </result>-->
+        </action>
+        
+        <action name="editBook" class="controller.BookActionSupport" method="editBook">
+            <result name="success">bookedit.jsp</result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">loginInput</param>
+            </result>
+        </action>
+        
+        <action name="prEditBook" class="controller.BookActionSupport" method="prEditBook">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> prEditBook </param>
+            </interceptor-ref>
+            <result name="success" type="redirectAction">
+                <param name="actionName">bookListPaging</param>
+            </result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">editBook</param>
+            </result>
+        </action>
+        
+        <action name="deleteBook" class="controller.BookActionSupport" method="deleteBook">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> deleteBook </param>
+            </interceptor-ref>
+            <result name="success" type="redirectAction">
+                <param name="actionName">bookListPaging</param>
+            </result>
+            <result name="fail" type="redirectAction">
+                <param name="actionName">bookListPaging</param>
+            </result>
+        </action>
+        
+        <!--Client-->
+        <!--Client-->
+        <!--Client-->
+        
+        <action name="index2" class="controller.ClientActionSupport">
+            <result name="success">jsp/client.jsp</result>
+        </action>
+        
+        <action name="index" class="controller.ClientActionSupport" method="GetAllPaging">
+            <result name="success">client.jsp</result>
+        </action>
+        
+        <action name="viewDetail" class="controller.ClientActionSupport" method="bookDetail">
+            <result name="success">bookdetail.jsp</result>
+        </action>
+        
+        <action name="postComment" class="controller.ClientActionSupport" method="comment">
+            <result name="success">bookdetail.jsp</result>
+            <result name="fail">error.jsp</result>
+        </action>
+        
+        <action name="register" class="controller.ClientActionSupport" method="register">
+            <result name="success">register.jsp</result>
+        </action>
+        
+        <action name="prRegister" class="controller.ClientActionSupport" method="prRegister">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> prRegister </param>
+            </interceptor-ref>
+            <interceptor-ref name="fileUpload"/>
+            <result name="success" type="redirectAction">
+                <param name="actionName">index</param>
+            </result>
+            <result name="fail">register.jsp</result>
+        </action>
+        
+        <action name="viewProfile" class="controller.ClientActionSupport" method="viewProfile">
+            <result name="success">profile.jsp</result>
+        </action>
+        
+        <action name="changePassword" class="controller.ClientActionSupport" method="changePassword">
+            <result name="success">changepw.jsp</result>
+        </action>
+        
+        <action name="prChangePassword" class="controller.ClientActionSupport" method="prChangePassword">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> prChangePassword </param>
+            </interceptor-ref>
+            <result name="success">profile.jsp</result>
+            <result name="fail">changepw.jsp</result>
+        </action>
+        
+        <action name="changeProfile" class="controller.ClientActionSupport" method="changeProfile">
+            <result name="success">changeprofile.jsp</result>
+        </action>
+        
+        <action name="prChangeProfile" class="controller.ClientActionSupport" method="prChangeProfile">
+            <interceptor-ref name="defaultSecurityStack">
+                <param name="tokenSession.includeMethods"> prChangeProfile </param>
+            </interceptor-ref>
+            <result name="success">profile.jsp</result>
+            <result name="fail">changeprofile.jsp</result>
+        </action>
+        
+    </package>
+    <constant name="struts.ui.theme" value="simple" />
+    <constant name="struts.action.excludePattern" value="/botdetectcaptcha"/>
+    <constant name="struts.multipart.maxSize" value="10" />
+    <!--<constant name="struts.enable.DynamicMethodInvocation" value="true"/>-->
+    <!--<constant name="struts.multipart.maxSize" value="1000000" />-->
+</struts>
